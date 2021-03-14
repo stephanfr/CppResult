@@ -88,6 +88,25 @@ TEST_CASE("Result Test", "[basic-checks]")
     REQUIRE(testResult5.innerError()->message() == "message test 3 35");
     REQUIRE(testResult5.innerError()->errorCodeValue() == 1001);
     REQUIRE(!testResult5.innerError()->innerError());
+
+    auto testResult6 =
+        Result<ErrorCodes1>::Failure(testResult5, ErrorCodes1::FAILURE_3, "message {} {} {}", "test 6", -56, true );
+
+    REQUIRE(testResult6.Failed());
+    REQUIRE(!testResult6.Succeeded());
+    REQUIRE(testResult6.errorCode() == ErrorCodes1::FAILURE_3);
+    REQUIRE(testResult6.message() == "message test 6 -56 true");
+    REQUIRE(testResult6.errorCodeValue() == 1002);
+    REQUIRE(testResult6.innerError());
+    REQUIRE(testResult6.innerError()->Failed());
+    REQUIRE(testResult6.innerError()->errorCodeType() == typeid(ErrorCodes1));
+    REQUIRE(testResult6.innerError()->message() == "message test 4 102");
+    REQUIRE(testResult6.innerError()->errorCodeValue() == 1002);
+    REQUIRE(testResult6.innerError()->innerError());
+    REQUIRE(testResult6.innerError()->innerError()->errorCodeType() == typeid(ErrorCodes1));
+    REQUIRE(testResult6.innerError()->innerError()->message() == "message test 3 35");
+    REQUIRE(testResult6.innerError()->innerError()->errorCodeValue() == 1001);
+    REQUIRE(!testResult6.innerError()->innerError()->innerError());
 }
 
 TEST_CASE("Result with Return Value Test", "[basic-checks]")
