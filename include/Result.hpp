@@ -27,30 +27,15 @@ namespace SEFUtility
         {
         }
 
-        template <typename... Args>
-        ResultBase(BaseResultCodes successOrFailure, const std::string& format, Args... args)
-            : m_successOrFailure(successOrFailure), m_message(fmt::format(format, args...))
-        {
-        }
-
         ResultBase(BaseResultCodes successOrFailure, const ResultBase& innerError, const std::string message)
-            : m_successOrFailure(successOrFailure), m_message(message), m_innerError(innerError.deepCopy())
-        {
-        }
-
-        template <typename... Args>
-        ResultBase(BaseResultCodes successOrFailure, const ResultBase& innerError, const std::string& format,
-                   Args... args)
-            : m_successOrFailure(successOrFailure),
-              m_message(fmt::format(format, args...)),
-              m_innerError(innerError.deepCopy())
+            : m_successOrFailure(successOrFailure), m_message(message), m_innerError(innerError.shallowCopy())
         {
         }
 
        public:
         virtual ~ResultBase(){};
 
-        virtual std::unique_ptr<const ResultBase> deepCopy() const = 0;
+        virtual std::unique_ptr<const ResultBase> shallowCopy() const = 0;
 
         bool Succeeded() const { return (m_successOrFailure == BaseResultCodes::SUCCESS); }
 
@@ -84,14 +69,6 @@ namespace SEFUtility
                    ((successOrFailure == BaseResultCodes::FAILURE) && (errorCode != TErrorCodeEnum::SUCCESS)));
         }
 
-        template <typename... Args>
-        Result(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string& format, Args... args)
-            : ResultBase(successOrFailure, fmt::format(format, args...)), m_errorCode(errorCode)
-        {
-            assert((successOrFailure == BaseResultCodes::SUCCESS) ||
-                   ((successOrFailure == BaseResultCodes::FAILURE) && (errorCode != TErrorCodeEnum::SUCCESS)));
-        }
-
         template <typename TInnerErrorCodeEnum>
         Result(BaseResultCodes successOrFailure, const Result<TInnerErrorCodeEnum>& innerError,
                TErrorCodeEnum errorCode, const std::string message)
@@ -101,16 +78,7 @@ namespace SEFUtility
                    ((successOrFailure == BaseResultCodes::FAILURE) && (errorCode != TErrorCodeEnum::SUCCESS)));
         }
 
-        template <typename TInnerErrorCodeEnum, typename... Args>
-        Result(BaseResultCodes successOrFailure, const Result<TInnerErrorCodeEnum>& innerError,
-               TErrorCodeEnum errorCode, const std::string& format, Args... args)
-            : ResultBase(successOrFailure, innerError, fmt::format(format, args...)), m_errorCode(errorCode)
-        {
-            assert((successOrFailure == BaseResultCodes::SUCCESS) ||
-                   ((successOrFailure == BaseResultCodes::FAILURE) && (errorCode != TErrorCodeEnum::SUCCESS)));
-        }
-
-        std::unique_ptr<const ResultBase> deepCopy() const
+        std::unique_ptr<const ResultBase> shallowCopy() const
         {
             return (std::unique_ptr<const ResultBase>(new Result<TErrorCodeEnum>(*this)));
         }
@@ -119,7 +87,7 @@ namespace SEFUtility
         Result(const Result<TErrorCodeEnum>& resultToCopy)
             : ResultBase(resultToCopy.m_successOrFailure, resultToCopy.m_message), m_errorCode(resultToCopy.m_errorCode)
         {
-            m_innerError = (resultToCopy.m_innerError ? resultToCopy.m_innerError->deepCopy() : nullptr);
+            m_innerError = (resultToCopy.m_innerError ? resultToCopy.m_innerError->shallowCopy() : nullptr);
         }
 
         virtual ~Result(){};
@@ -130,7 +98,7 @@ namespace SEFUtility
             m_message = resultToCopy.m_message;
             m_errorCode = resultToCopy.m_errorCode;
 
-            m_innerError = (resultToCopy.m_innerError ? resultToCopy.m_innerError->deepCopy() : nullptr);
+            m_innerError = (resultToCopy.m_innerError ? resultToCopy.m_innerError->shallowCopy() : nullptr);
 
             return (*this);
         }
@@ -179,43 +147,15 @@ namespace SEFUtility
     class ResultWithReturnValue : public Result<TErrorCodeEnum>
     {
        protected:
-        ResultWithReturnValue(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string message,
-                              TResultType returnValue)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, message), m_returnValue(returnValue)
-        {
-        }
-
-        template <typename... Args>
-        ResultWithReturnValue(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string& format,
-                              Args... args, TResultType returnValue)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, fmt::format(format, args...)),
-              m_returnValue(returnValue)
-        {
-        }
-
         ResultWithReturnValue(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string message)
             : Result<TErrorCodeEnum>(successOrFailure, errorCode, message)
         {
         }
 
-        template <typename... Args>
-        ResultWithReturnValue(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string& format,
-                              Args... args)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, fmt::format(format, args...))
-        {
-        }
-
         template <typename TInnerErrorCodeEnum>
-        ResultWithReturnValue(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string message,
-                              const Result<TInnerErrorCodeEnum>& innerError)
+        ResultWithReturnValue(BaseResultCodes successOrFailure, const Result<TInnerErrorCodeEnum>& innerError,
+                              TErrorCodeEnum errorCode, const std::string message)
             : Result<TErrorCodeEnum>(successOrFailure, innerError, errorCode, message)
-        {
-        }
-
-        template <typename TInnerErrorCodeEnum, typename... Args>
-        ResultWithReturnValue(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string& format,
-                              Args... args, const Result<TInnerErrorCodeEnum>& innerError)
-            : Result<TErrorCodeEnum>(successOrFailure, innerError, errorCode, fmt::format(format, args...))
         {
         }
 
@@ -276,7 +216,7 @@ namespace SEFUtility
                                                                           TErrorCodeEnum errorCode,
                                                                           const std::string& message)
         {
-            return (ResultWithReturnValue(BaseResultCodes::FAILURE, errorCode, message, innerError));
+            return (ResultWithReturnValue(BaseResultCodes::FAILURE, innerError, errorCode, message));
         }
 
         template <typename TInnerErrorCodeEnum, typename... Args>
@@ -285,7 +225,7 @@ namespace SEFUtility
                                                                           const std::string& format, Args... args)
         {
             return (
-                ResultWithReturnValue(BaseResultCodes::FAILURE, errorCode, fmt::format(format, args...), innerError));
+                ResultWithReturnValue(BaseResultCodes::FAILURE, innerError, errorCode, fmt::format(format, args...)));
         }
 
         TResultType& ReturnValue()
@@ -302,42 +242,15 @@ namespace SEFUtility
     class ResultWithReturnRef : public Result<TErrorCodeEnum>
     {
        protected:
-        ResultWithReturnRef(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string message,
-                            TResultType& returnRef)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, message), m_returnRef(returnRef)
-        {
-        }
-
-        template <typename... Args>
-        ResultWithReturnRef(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string& format,
-                            Args... args, TResultType& returnRef)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, fmt::format(format, args...)), m_returnRef(returnRef)
-        {
-        }
-
         ResultWithReturnRef(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string message)
             : Result<TErrorCodeEnum>(successOrFailure, errorCode, message)
         {
         }
 
-        template <typename... Args>
-        ResultWithReturnRef(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string& format,
-                            Args... args)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, fmt::format(format, args...))
-        {
-        }
-
         template <typename TInnerErrorCodeEnum>
-        ResultWithReturnRef(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string message,
-                            const Result<TInnerErrorCodeEnum>& innerError)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, message, innerError)
-        {
-        }
-
-        template <typename TInnerErrorCodeEnum, typename... Args>
-        ResultWithReturnRef(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string& format,
-                            Args... args, const Result<TInnerErrorCodeEnum>& innerError)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, fmt::format(format, args...), innerError)
+        ResultWithReturnRef(BaseResultCodes successOrFailure, const Result<TInnerErrorCodeEnum>& innerError,
+                            TErrorCodeEnum errorCode, const std::string message)
+            : Result<TErrorCodeEnum>(successOrFailure, innerError, errorCode, message)
         {
         }
 
@@ -393,7 +306,7 @@ namespace SEFUtility
                                                                         TErrorCodeEnum errorCode,
                                                                         const std::string& message)
         {
-            return (ResultWithReturnRef(BaseResultCodes::FAILURE, errorCode, message, innerError));
+            return (ResultWithReturnRef(BaseResultCodes::FAILURE, innerError, errorCode, message));
         }
 
         template <typename TInnerErrorCodeEnum, typename... Args>
@@ -401,7 +314,7 @@ namespace SEFUtility
                                                                         TErrorCodeEnum errorCode,
                                                                         const std::string& format, Args... args)
         {
-            return (ResultWithReturnRef(BaseResultCodes::FAILURE, errorCode, fmt::format(format, args...), innerError));
+            return (ResultWithReturnRef(BaseResultCodes::FAILURE, innerError, errorCode, fmt::format(format, args...)));
         }
 
         TResultType& ReturnRef()
@@ -423,24 +336,10 @@ namespace SEFUtility
         {
         }
 
-        template <typename... Args>
-        ResultWithReturnUniquePtr(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string& format,
-                                  Args... args)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, fmt::format(format, args...))
-        {
-        }
-
         template <typename TInnerErrorCodeEnum>
         ResultWithReturnUniquePtr(BaseResultCodes successOrFailure, const Result<TInnerErrorCodeEnum>& innerError,
                                   TErrorCodeEnum errorCode, const std::string message)
             : Result<TErrorCodeEnum>(successOrFailure, innerError, errorCode, message)
-        {
-        }
-
-        template <typename TInnerErrorCodeEnum, typename... Args>
-        ResultWithReturnUniquePtr(BaseResultCodes successOrFailure, const Result<TInnerErrorCodeEnum>& innerError,
-                                  TErrorCodeEnum errorCode, const std::string& format, Args... args)
-            : Result<TErrorCodeEnum>(successOrFailure, innerError, errorCode, fmt::format(format, args...))
         {
         }
 
@@ -466,21 +365,12 @@ namespace SEFUtility
         }
 
         const ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType>& operator=(
-            const ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType>& resultToCopy)
+                const ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType>& resultToCopy) = delete;
+
+
+        static ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType> Success(std::unique_ptr<TResultType>& returnValue)
         {
-            ResultBase::m_successOrFailure = resultToCopy.m_successOrFailure;
-            ResultBase::m_message = resultToCopy.m_message;
-            Result<TErrorCodeEnum>::m_errorCode = resultToCopy.m_errorCode;
-            m_returnPtr = resultToCopy.m_returnPtr;
-
-            this->m_innerError = (resultToCopy.m_innerError ? resultToCopy.m_innerError->shallowCopy() : nullptr);
-
-            return (*this);
-        }
-
-        static ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType> Success(TResultType* returnValue)
-        {
-            return (ResultWithReturnUniquePtr(std::unique_ptr<TResultType>(returnValue)));
+            return (ResultWithReturnUniquePtr(returnValue));
         }
 
         static ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType> Failure(TErrorCodeEnum errorCode,
@@ -508,8 +398,8 @@ namespace SEFUtility
             const Result<TInnerErrorCodeEnum>& innerError, TErrorCodeEnum errorCode, const std::string& format,
             Args... args)
         {
-            return (ResultWithReturnUniquePtr(BaseResultCodes::FAILURE,
-                                              innerError, errorCode, fmt::format(format, args...)));
+            return (ResultWithReturnUniquePtr(BaseResultCodes::FAILURE, innerError, errorCode,
+                                              fmt::format(format, args...)));
         }
 
         std::unique_ptr<TResultType>& ReturnPtr() { return (m_returnPtr); }
@@ -527,24 +417,10 @@ namespace SEFUtility
         {
         }
 
-        template <typename... Args>
-        ResultWithReturnSharedPtr(BaseResultCodes successOrFailure, TErrorCodeEnum errorCode, const std::string& format,
-                                  Args... args)
-            : Result<TErrorCodeEnum>(successOrFailure, errorCode, fmt::format(format, args...))
-        {
-        }
-
         template <typename TInnerErrorCodeEnum>
-        ResultWithReturnSharedPtr(BaseResultCodes successOrFailure,
-                                  const Result<TInnerErrorCodeEnum>& innerError, TErrorCodeEnum errorCode, const std::string message)
+        ResultWithReturnSharedPtr(BaseResultCodes successOrFailure, const Result<TInnerErrorCodeEnum>& innerError,
+                                  TErrorCodeEnum errorCode, const std::string message)
             : Result<TErrorCodeEnum>(successOrFailure, innerError, errorCode, message)
-        {
-        }
-
-        template <typename TInnerErrorCodeEnum, typename... Args>
-        ResultWithReturnSharedPtr(BaseResultCodes successOrFailure, const Result<TInnerErrorCodeEnum>& innerError, TErrorCodeEnum errorCode, const std::string& format,
-                                  Args... args)
-            : Result<TErrorCodeEnum>(successOrFailure, innerError, errorCode, fmt::format(format, args...))
         {
         }
 
@@ -556,7 +432,8 @@ namespace SEFUtility
         }
 
         ResultWithReturnSharedPtr(const ResultWithReturnSharedPtr<TErrorCodeEnum, TResultType>& resultToCopy)
-            : Result<TErrorCodeEnum>(resultToCopy.m_successOrFailure, resultToCopy.m_errorCode, resultToCopy.m_message)
+            : Result<TErrorCodeEnum>(resultToCopy.m_successOrFailure, resultToCopy.m_errorCode, resultToCopy.m_message),
+              m_returnPtr(resultToCopy.m_returnPtr)
         {
             this->m_innerError = (resultToCopy.m_innerError ? resultToCopy.m_innerError->shallowCopy() : nullptr);
         }
@@ -598,19 +475,19 @@ namespace SEFUtility
         }
 
         template <typename TInnerErrorCodeEnum>
-        static ResultWithReturnSharedPtr<TErrorCodeEnum, TResultType> Failure(const Result<TInnerErrorCodeEnum>& innerError,
-            TErrorCodeEnum errorCode, const std::string& message )
+        static ResultWithReturnSharedPtr<TErrorCodeEnum, TResultType> Failure(
+            const Result<TInnerErrorCodeEnum>& innerError, TErrorCodeEnum errorCode, const std::string& message)
         {
             return (ResultWithReturnSharedPtr(BaseResultCodes::FAILURE, innerError, errorCode, message));
         }
 
         template <typename TInnerErrorCodeEnum, typename... Args>
         static ResultWithReturnSharedPtr<TErrorCodeEnum, TResultType> Failure(
-            const Result<TInnerErrorCodeEnum>& innerError,
-            TErrorCodeEnum errorCode, const std::string& format, Args... args)
+            const Result<TInnerErrorCodeEnum>& innerError, TErrorCodeEnum errorCode, const std::string& format,
+            Args... args)
         {
-            return (ResultWithReturnSharedPtr(BaseResultCodes::FAILURE,
-                                              innerError, errorCode, fmt::format(format, args...)));
+            return (ResultWithReturnSharedPtr(BaseResultCodes::FAILURE, innerError, errorCode,
+                                              fmt::format(format, args...)));
         }
 
         std::shared_ptr<TResultType>& ReturnPtr() { return (m_returnPtr); }

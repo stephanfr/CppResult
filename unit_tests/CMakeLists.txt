@@ -1,3 +1,4 @@
+
 find_package(Catch2 REQUIRED)
 add_executable(tests ResultTest.cpp )
 target_include_directories( tests PRIVATE ../src )
