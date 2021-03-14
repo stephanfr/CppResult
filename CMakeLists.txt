@@ -39,6 +39,6 @@ include(CPack)
 include(CodeCoverage)
 append_coverage_compiler_flags()
 
-setup_target_for_coverage_lcov(NAME tests_coverage EXECUTABLE tests DEPENDENCIES tests EXCLUDE "/usr/*" "${PROJECT_SOURCE_DIR}/build/*" )
+setup_target_for_coverage_lcov(NAME cpp_result_tests_coverage EXECUTABLE cpp_result_tests DEPENDENCIES cpp_result_tests EXCLUDE "/usr/*" "${PROJECT_SOURCE_DIR}/build/*" )
 
 add_subdirectory("unit_tests")
