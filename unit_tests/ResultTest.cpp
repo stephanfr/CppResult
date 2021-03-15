@@ -34,197 +34,197 @@ enum class ErrorCodes2
 
 TEST_CASE("Result Test", "[basic-checks]")
 {
-    auto testResult1 = Result<ErrorCodes1>::Success();
+    auto testResult1 = Result<ErrorCodes1>::success();
 
-    REQUIRE(testResult1.Succeeded());
-    REQUIRE(!testResult1.Failed());
-    REQUIRE(testResult1.errorCode() == ErrorCodes1::SUCCESS);
+    REQUIRE(testResult1.succeeded());
+    REQUIRE(!testResult1.failed());
+    REQUIRE(testResult1.error_code() == ErrorCodes1::SUCCESS);
     REQUIRE(testResult1.message() == "Success");
-    REQUIRE(testResult1.errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(!testResult1.innerError());
+    REQUIRE(testResult1.error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(!testResult1.inner_error());
 
     auto testResult1Copy(testResult1);
 
-    REQUIRE(testResult1Copy.Succeeded());
-    REQUIRE(!testResult1Copy.Failed());
-    REQUIRE(testResult1Copy.errorCode() == ErrorCodes1::SUCCESS);
+    REQUIRE(testResult1Copy.succeeded());
+    REQUIRE(!testResult1Copy.failed());
+    REQUIRE(testResult1Copy.error_code() == ErrorCodes1::SUCCESS);
     REQUIRE(testResult1Copy.message() == "Success");
-    REQUIRE(testResult1Copy.errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(!testResult1Copy.innerError());
+    REQUIRE(testResult1Copy.error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(!testResult1Copy.inner_error());
 
-    auto testResult2 = Result<ErrorCodes1>::Failure(ErrorCodes1::FAILURE_1, "message");
+    auto testResult2 = Result<ErrorCodes1>::failure(ErrorCodes1::FAILURE_1, "message");
 
-    REQUIRE(testResult2.Failed());
-    REQUIRE(!testResult2.Succeeded());
-    REQUIRE(testResult2.errorCode() == ErrorCodes1::FAILURE_1);
+    REQUIRE(testResult2.failed());
+    REQUIRE(!testResult2.succeeded());
+    REQUIRE(testResult2.error_code() == ErrorCodes1::FAILURE_1);
     REQUIRE(testResult2.message() == "message");
-    REQUIRE(testResult2.errorCodeValue() == 1000);
-    REQUIRE(!testResult2.innerError());
+    REQUIRE(testResult2.error_code_value() == 1000);
+    REQUIRE(!testResult2.inner_error());
 
-    auto testResult3 = Result<ErrorCodes1>::Failure(ErrorCodes1::FAILURE_2, "message {} {}", "test 3", 35);
+    auto testResult3 = Result<ErrorCodes1>::failure(ErrorCodes1::FAILURE_2, "message {} {}", "test 3", 35);
 
-    REQUIRE(testResult3.Failed());
-    REQUIRE(!testResult3.Succeeded());
-    REQUIRE(testResult3.errorCode() == ErrorCodes1::FAILURE_2);
+    REQUIRE(testResult3.failed());
+    REQUIRE(!testResult3.succeeded());
+    REQUIRE(testResult3.error_code() == ErrorCodes1::FAILURE_2);
     REQUIRE(testResult3.message() == "message test 3 35");
-    REQUIRE(testResult3.errorCodeValue() == 1001);
-    REQUIRE(!testResult3.innerError());
+    REQUIRE(testResult3.error_code_value() == 1001);
+    REQUIRE(!testResult3.inner_error());
 
-    auto testResult4 = Result<ErrorCodes1>::Failure(testResult3, ErrorCodes1::FAILURE_2, "message without var args");
+    auto testResult4 = Result<ErrorCodes1>::failure(testResult3, ErrorCodes1::FAILURE_2, "message without var args");
 
-    REQUIRE(testResult4.Failed());
-    REQUIRE(!testResult4.Succeeded());
-    REQUIRE(testResult4.errorCode() == ErrorCodes1::FAILURE_2);
+    REQUIRE(testResult4.failed());
+    REQUIRE(!testResult4.succeeded());
+    REQUIRE(testResult4.error_code() == ErrorCodes1::FAILURE_2);
     REQUIRE(testResult4.message() == "message without var args");
-    REQUIRE(testResult4.errorCodeValue() == 1001);
-    REQUIRE(testResult4.innerError());
-    REQUIRE(testResult4.innerError()->Failed());
-    REQUIRE(testResult4.innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult4.innerError()->message() == "message test 3 35");
-    REQUIRE(testResult4.innerError()->errorCodeValue() == 1001);
-    REQUIRE(!testResult4.innerError()->innerError());
+    REQUIRE(testResult4.error_code_value() == 1001);
+    REQUIRE(testResult4.inner_error());
+    REQUIRE(testResult4.inner_error()->failed());
+    REQUIRE(testResult4.inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult4.inner_error()->message() == "message test 3 35");
+    REQUIRE(testResult4.inner_error()->error_code_value() == 1001);
+    REQUIRE(!testResult4.inner_error()->inner_error());
 
     auto testResult5 =
-        Result<ErrorCodes1>::Failure(testResult3, ErrorCodes1::FAILURE_3, "message {} {}", "test 4", 102);
+        Result<ErrorCodes1>::failure(testResult3, ErrorCodes1::FAILURE_3, "message {} {}", "test 4", 102);
 
-    REQUIRE(testResult5.Failed());
-    REQUIRE(!testResult5.Succeeded());
-    REQUIRE(testResult5.errorCode() == ErrorCodes1::FAILURE_3);
+    REQUIRE(testResult5.failed());
+    REQUIRE(!testResult5.succeeded());
+    REQUIRE(testResult5.error_code() == ErrorCodes1::FAILURE_3);
     REQUIRE(testResult5.message() == "message test 4 102");
-    REQUIRE(testResult5.errorCodeValue() == 1002);
-    REQUIRE(testResult5.innerError());
-    REQUIRE(testResult5.innerError()->Failed());
-    REQUIRE(testResult5.innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult5.innerError()->message() == "message test 3 35");
-    REQUIRE(testResult5.innerError()->errorCodeValue() == 1001);
-    REQUIRE(!testResult5.innerError()->innerError());
+    REQUIRE(testResult5.error_code_value() == 1002);
+    REQUIRE(testResult5.inner_error());
+    REQUIRE(testResult5.inner_error()->failed());
+    REQUIRE(testResult5.inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult5.inner_error()->message() == "message test 3 35");
+    REQUIRE(testResult5.inner_error()->error_code_value() == 1001);
+    REQUIRE(!testResult5.inner_error()->inner_error());
 
     auto testResult6 =
-        Result<ErrorCodes1>::Failure(testResult5, ErrorCodes1::FAILURE_3, "message {} {} {}", "test 6", -56, true);
+        Result<ErrorCodes1>::failure(testResult5, ErrorCodes1::FAILURE_3, "message {} {} {}", "test 6", -56, true);
 
-    REQUIRE(testResult6.Failed());
-    REQUIRE(!testResult6.Succeeded());
-    REQUIRE(testResult6.errorCode() == ErrorCodes1::FAILURE_3);
+    REQUIRE(testResult6.failed());
+    REQUIRE(!testResult6.succeeded());
+    REQUIRE(testResult6.error_code() == ErrorCodes1::FAILURE_3);
     REQUIRE(testResult6.message() == "message test 6 -56 true");
-    REQUIRE(testResult6.errorCodeValue() == 1002);
-    REQUIRE(testResult6.innerError());
-    REQUIRE(testResult6.innerError()->Failed());
-    REQUIRE(testResult6.innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult6.innerError()->message() == "message test 4 102");
-    REQUIRE(testResult6.innerError()->errorCodeValue() == 1002);
-    REQUIRE(testResult6.innerError()->innerError());
-    REQUIRE(testResult6.innerError()->innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult6.innerError()->innerError()->message() == "message test 3 35");
-    REQUIRE(testResult6.innerError()->innerError()->errorCodeValue() == 1001);
-    REQUIRE(!testResult6.innerError()->innerError()->innerError());
+    REQUIRE(testResult6.error_code_value() == 1002);
+    REQUIRE(testResult6.inner_error());
+    REQUIRE(testResult6.inner_error()->failed());
+    REQUIRE(testResult6.inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult6.inner_error()->message() == "message test 4 102");
+    REQUIRE(testResult6.inner_error()->error_code_value() == 1002);
+    REQUIRE(testResult6.inner_error()->inner_error());
+    REQUIRE(testResult6.inner_error()->inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult6.inner_error()->inner_error()->message() == "message test 3 35");
+    REQUIRE(testResult6.inner_error()->inner_error()->error_code_value() == 1001);
+    REQUIRE(!testResult6.inner_error()->inner_error()->inner_error());
 
     testResult1 = testResult6;
 
-    REQUIRE(testResult1.Failed());
-    REQUIRE(!testResult1.Succeeded());
-    REQUIRE(testResult1.errorCode() == ErrorCodes1::FAILURE_3);
+    REQUIRE(testResult1.failed());
+    REQUIRE(!testResult1.succeeded());
+    REQUIRE(testResult1.error_code() == ErrorCodes1::FAILURE_3);
     REQUIRE(testResult1.message() == "message test 6 -56 true");
-    REQUIRE(testResult1.errorCodeValue() == 1002);
-    REQUIRE(testResult1.innerError());
-    REQUIRE(testResult1.innerError()->Failed());
-    REQUIRE(testResult1.innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult1.innerError()->message() == "message test 4 102");
-    REQUIRE(testResult1.innerError()->errorCodeValue() == 1002);
-    REQUIRE(testResult1.innerError()->innerError());
-    REQUIRE(testResult1.innerError()->innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult1.innerError()->innerError()->message() == "message test 3 35");
-    REQUIRE(testResult1.innerError()->innerError()->errorCodeValue() == 1001);
-    REQUIRE(!testResult1.innerError()->innerError()->innerError());
+    REQUIRE(testResult1.error_code_value() == 1002);
+    REQUIRE(testResult1.inner_error());
+    REQUIRE(testResult1.inner_error()->failed());
+    REQUIRE(testResult1.inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult1.inner_error()->message() == "message test 4 102");
+    REQUIRE(testResult1.inner_error()->error_code_value() == 1002);
+    REQUIRE(testResult1.inner_error()->inner_error());
+    REQUIRE(testResult1.inner_error()->inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult1.inner_error()->inner_error()->message() == "message test 3 35");
+    REQUIRE(testResult1.inner_error()->inner_error()->error_code_value() == 1001);
+    REQUIRE(!testResult1.inner_error()->inner_error()->inner_error());
 }
 
 TEST_CASE("Result with Return Value Test", "[basic-checks]")
 {
     std::string return_value("returned value");
 
-    auto testResult1 = ResultWithReturnValue<ErrorCodes2, std::string>::Success(return_value);
+    auto testResult1 = ResultWithReturnValue<ErrorCodes2, std::string>::success(return_value);
 
-    REQUIRE(testResult1.Succeeded());
-    REQUIRE(!testResult1.Failed());
-    REQUIRE(testResult1.errorCode() == ErrorCodes2::SUCCESS);
+    REQUIRE(testResult1.succeeded());
+    REQUIRE(!testResult1.failed());
+    REQUIRE(testResult1.error_code() == ErrorCodes2::SUCCESS);
     REQUIRE(testResult1.message() == "Success");
-    REQUIRE(testResult1.errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(!testResult1.innerError());
-    REQUIRE(testResult1.ReturnValue() == "returned value");
+    REQUIRE(testResult1.error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(!testResult1.inner_error());
+    REQUIRE(testResult1.return_value() == "returned value");
     return_value = "new value";
-    REQUIRE(testResult1.ReturnValue() == "returned value");
+    REQUIRE(testResult1.return_value() == "returned value");
 
     auto testResult1Copy(testResult1);
 
-    REQUIRE(testResult1Copy.Succeeded());
-    REQUIRE(!testResult1Copy.Failed());
-    REQUIRE(testResult1Copy.errorCode() == ErrorCodes2::SUCCESS);
+    REQUIRE(testResult1Copy.succeeded());
+    REQUIRE(!testResult1Copy.failed());
+    REQUIRE(testResult1Copy.error_code() == ErrorCodes2::SUCCESS);
     REQUIRE(testResult1Copy.message() == "Success");
-    REQUIRE(testResult1Copy.errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(!testResult1Copy.innerError());
-    REQUIRE(testResult1Copy.ReturnValue() == "returned value");
+    REQUIRE(testResult1Copy.error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(!testResult1Copy.inner_error());
+    REQUIRE(testResult1Copy.return_value() == "returned value");
 
-    auto testResult2 = ResultWithReturnValue<ErrorCodes2, std::string>::Failure(ErrorCodes2::FAILURE_1, "message");
+    auto testResult2 = ResultWithReturnValue<ErrorCodes2, std::string>::failure(ErrorCodes2::FAILURE_1, "message");
 
-    REQUIRE(testResult2.Failed());
-    REQUIRE(!testResult2.Succeeded());
-    REQUIRE(testResult2.errorCode() == ErrorCodes2::FAILURE_1);
+    REQUIRE(testResult2.failed());
+    REQUIRE(!testResult2.succeeded());
+    REQUIRE(testResult2.error_code() == ErrorCodes2::FAILURE_1);
     REQUIRE(testResult2.message() == "message");
-    REQUIRE(testResult2.errorCodeValue() == 1000);
-    REQUIRE(!testResult2.innerError());
+    REQUIRE(testResult2.error_code_value() == 1000);
+    REQUIRE(!testResult2.inner_error());
 
     auto testResult3 =
-        ResultWithReturnValue<ErrorCodes1, std::string>::Failure(ErrorCodes1::FAILURE_2, "message {} {}", "test 3", 35);
+        ResultWithReturnValue<ErrorCodes1, std::string>::failure(ErrorCodes1::FAILURE_2, "message {} {}", "test 3", 35);
 
-    REQUIRE(testResult3.Failed());
-    REQUIRE(!testResult3.Succeeded());
-    REQUIRE(testResult3.errorCode() == ErrorCodes1::FAILURE_2);
+    REQUIRE(testResult3.failed());
+    REQUIRE(!testResult3.succeeded());
+    REQUIRE(testResult3.error_code() == ErrorCodes1::FAILURE_2);
     REQUIRE(testResult3.message() == "message test 3 35");
-    REQUIRE(testResult3.errorCodeValue() == 1001);
-    REQUIRE(!testResult3.innerError());
+    REQUIRE(testResult3.error_code_value() == 1001);
+    REQUIRE(!testResult3.inner_error());
 
     auto testResult4 =
-        ResultWithReturnValue<ErrorCodes2, std::string>::Failure(testResult3, ErrorCodes2::FAILURE_3, "message alone");
+        ResultWithReturnValue<ErrorCodes2, std::string>::failure(testResult3, ErrorCodes2::FAILURE_3, "message alone");
 
-    REQUIRE(testResult4.Failed());
-    REQUIRE(!testResult4.Succeeded());
-    REQUIRE(testResult4.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult4.failed());
+    REQUIRE(!testResult4.succeeded());
+    REQUIRE(testResult4.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult4.message() == "message alone");
-    REQUIRE(testResult4.errorCodeValue() == 1002);
-    REQUIRE(testResult4.innerError());
-    REQUIRE(testResult4.innerError()->Failed());
-    REQUIRE(testResult4.innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult4.innerError()->message() == "message test 3 35");
-    REQUIRE(testResult4.innerError()->errorCodeValue() == 1001);
-    REQUIRE(!testResult4.innerError()->innerError());
+    REQUIRE(testResult4.error_code_value() == 1002);
+    REQUIRE(testResult4.inner_error());
+    REQUIRE(testResult4.inner_error()->failed());
+    REQUIRE(testResult4.inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult4.inner_error()->message() == "message test 3 35");
+    REQUIRE(testResult4.inner_error()->error_code_value() == 1001);
+    REQUIRE(!testResult4.inner_error()->inner_error());
 
-    auto testResult5 = ResultWithReturnValue<ErrorCodes2, std::string>::Failure(testResult2, ErrorCodes2::FAILURE_3,
+    auto testResult5 = ResultWithReturnValue<ErrorCodes2, std::string>::failure(testResult2, ErrorCodes2::FAILURE_3,
                                                                                 "message {} {}", "test 4", 102);
 
-    REQUIRE(testResult5.Failed());
-    REQUIRE(!testResult5.Succeeded());
-    REQUIRE(testResult5.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult5.failed());
+    REQUIRE(!testResult5.succeeded());
+    REQUIRE(testResult5.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult5.message() == "message test 4 102");
-    REQUIRE(testResult5.errorCodeValue() == 1002);
-    REQUIRE(testResult5.innerError());
-    REQUIRE(testResult5.innerError()->Failed());
-    REQUIRE(testResult5.innerError()->errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(testResult5.innerError()->message() == "message");
-    REQUIRE(testResult5.innerError()->errorCodeValue() == 1000);
-    REQUIRE(!testResult5.innerError()->innerError());
+    REQUIRE(testResult5.error_code_value() == 1002);
+    REQUIRE(testResult5.inner_error());
+    REQUIRE(testResult5.inner_error()->failed());
+    REQUIRE(testResult5.inner_error()->error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(testResult5.inner_error()->message() == "message");
+    REQUIRE(testResult5.inner_error()->error_code_value() == 1000);
+    REQUIRE(!testResult5.inner_error()->inner_error());
 
     testResult1 = testResult5;
 
-    REQUIRE(testResult1.Failed());
-    REQUIRE(!testResult1.Succeeded());
-    REQUIRE(testResult1.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult1.failed());
+    REQUIRE(!testResult1.succeeded());
+    REQUIRE(testResult1.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult1.message() == "message test 4 102");
-    REQUIRE(testResult1.errorCodeValue() == 1002);
-    REQUIRE(testResult1.innerError());
-    REQUIRE(testResult1.innerError()->Failed());
-    REQUIRE(testResult1.innerError()->errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(testResult1.innerError()->message() == "message");
-    REQUIRE(testResult1.innerError()->errorCodeValue() == 1000);
-    REQUIRE(!testResult1.innerError()->innerError());
+    REQUIRE(testResult1.error_code_value() == 1002);
+    REQUIRE(testResult1.inner_error());
+    REQUIRE(testResult1.inner_error()->failed());
+    REQUIRE(testResult1.inner_error()->error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(testResult1.inner_error()->message() == "message");
+    REQUIRE(testResult1.inner_error()->error_code_value() == 1000);
+    REQUIRE(!testResult1.inner_error()->inner_error());
 }
 
 TEST_CASE("Result with Return Ref Test", "[basic-checks]")
@@ -233,164 +233,164 @@ TEST_CASE("Result with Return Ref Test", "[basic-checks]")
 
     auto testResult1 = ResultWithReturnRef<ErrorCodes2, std::string>(return_value);
 
-    REQUIRE(testResult1.Succeeded());
-    REQUIRE(!testResult1.Failed());
-    REQUIRE(testResult1.errorCode() == ErrorCodes2::SUCCESS);
+    REQUIRE(testResult1.succeeded());
+    REQUIRE(!testResult1.failed());
+    REQUIRE(testResult1.error_code() == ErrorCodes2::SUCCESS);
     REQUIRE(testResult1.message() == "Success");
-    REQUIRE(testResult1.errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(!testResult1.innerError());
+    REQUIRE(testResult1.error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(!testResult1.inner_error());
     REQUIRE(testResult1.ReturnRef() == "returned value");
     return_value = "new value";
     REQUIRE(testResult1.ReturnRef() == "new value");
 
     auto testResult1Copy(testResult1);
 
-    REQUIRE(testResult1Copy.Succeeded());
-    REQUIRE(!testResult1Copy.Failed());
-    REQUIRE(testResult1Copy.errorCode() == ErrorCodes2::SUCCESS);
+    REQUIRE(testResult1Copy.succeeded());
+    REQUIRE(!testResult1Copy.failed());
+    REQUIRE(testResult1Copy.error_code() == ErrorCodes2::SUCCESS);
     REQUIRE(testResult1Copy.message() == "Success");
-    REQUIRE(testResult1Copy.errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(!testResult1Copy.innerError());
+    REQUIRE(testResult1Copy.error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(!testResult1Copy.inner_error());
     REQUIRE(testResult1Copy.ReturnRef() == "new value");
 
-    auto testResult2 = ResultWithReturnRef<ErrorCodes2, std::string>::Failure(ErrorCodes2::FAILURE_1, "message");
+    auto testResult2 = ResultWithReturnRef<ErrorCodes2, std::string>::failure(ErrorCodes2::FAILURE_1, "message");
 
-    REQUIRE(testResult2.Failed());
-    REQUIRE(!testResult2.Succeeded());
-    REQUIRE(testResult2.errorCode() == ErrorCodes2::FAILURE_1);
+    REQUIRE(testResult2.failed());
+    REQUIRE(!testResult2.succeeded());
+    REQUIRE(testResult2.error_code() == ErrorCodes2::FAILURE_1);
     REQUIRE(testResult2.message() == "message");
-    REQUIRE(testResult2.errorCodeValue() == 1000);
-    REQUIRE(!testResult2.innerError());
+    REQUIRE(testResult2.error_code_value() == 1000);
+    REQUIRE(!testResult2.inner_error());
 
     auto testResult3 =
-        ResultWithReturnRef<ErrorCodes1, std::string>::Failure(ErrorCodes1::FAILURE_2, "message {} {}", "test 3", 35);
+        ResultWithReturnRef<ErrorCodes1, std::string>::failure(ErrorCodes1::FAILURE_2, "message {} {}", "test 3", 35);
 
-    REQUIRE(testResult3.Failed());
-    REQUIRE(!testResult3.Succeeded());
-    REQUIRE(testResult3.errorCode() == ErrorCodes1::FAILURE_2);
+    REQUIRE(testResult3.failed());
+    REQUIRE(!testResult3.succeeded());
+    REQUIRE(testResult3.error_code() == ErrorCodes1::FAILURE_2);
     REQUIRE(testResult3.message() == "message test 3 35");
-    REQUIRE(testResult3.errorCodeValue() == 1001);
-    REQUIRE(!testResult3.innerError());
+    REQUIRE(testResult3.error_code_value() == 1001);
+    REQUIRE(!testResult3.inner_error());
 
     auto testResult4 =
-        ResultWithReturnRef<ErrorCodes2, std::string>::Failure(testResult3, ErrorCodes2::FAILURE_3, "message alone");
+        ResultWithReturnRef<ErrorCodes2, std::string>::failure(testResult3, ErrorCodes2::FAILURE_3, "message alone");
 
-    REQUIRE(testResult4.Failed());
-    REQUIRE(!testResult4.Succeeded());
-    REQUIRE(testResult4.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult4.failed());
+    REQUIRE(!testResult4.succeeded());
+    REQUIRE(testResult4.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult4.message() == "message alone");
-    REQUIRE(testResult4.errorCodeValue() == 1002);
-    REQUIRE(testResult4.innerError());
-    REQUIRE(testResult4.innerError()->Failed());
-    REQUIRE(testResult4.innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult4.innerError()->message() == "message test 3 35");
-    REQUIRE(testResult4.innerError()->errorCodeValue() == 1001);
-    REQUIRE(!testResult4.innerError()->innerError());
+    REQUIRE(testResult4.error_code_value() == 1002);
+    REQUIRE(testResult4.inner_error());
+    REQUIRE(testResult4.inner_error()->failed());
+    REQUIRE(testResult4.inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult4.inner_error()->message() == "message test 3 35");
+    REQUIRE(testResult4.inner_error()->error_code_value() == 1001);
+    REQUIRE(!testResult4.inner_error()->inner_error());
 
-    auto testResult5 = ResultWithReturnRef<ErrorCodes2, std::string>::Failure(testResult2, ErrorCodes2::FAILURE_3,
+    auto testResult5 = ResultWithReturnRef<ErrorCodes2, std::string>::failure(testResult2, ErrorCodes2::FAILURE_3,
                                                                                 "message {} {}", "test 4", 102);
 
-    REQUIRE(testResult5.Failed());
-    REQUIRE(!testResult5.Succeeded());
-    REQUIRE(testResult5.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult5.failed());
+    REQUIRE(!testResult5.succeeded());
+    REQUIRE(testResult5.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult5.message() == "message test 4 102");
-    REQUIRE(testResult5.errorCodeValue() == 1002);
-    REQUIRE(testResult5.innerError());
-    REQUIRE(testResult5.innerError()->Failed());
-    REQUIRE(testResult5.innerError()->errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(testResult5.innerError()->message() == "message");
-    REQUIRE(testResult5.innerError()->errorCodeValue() == 1000);
-    REQUIRE(!testResult5.innerError()->innerError());
+    REQUIRE(testResult5.error_code_value() == 1002);
+    REQUIRE(testResult5.inner_error());
+    REQUIRE(testResult5.inner_error()->failed());
+    REQUIRE(testResult5.inner_error()->error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(testResult5.inner_error()->message() == "message");
+    REQUIRE(testResult5.inner_error()->error_code_value() == 1000);
+    REQUIRE(!testResult5.inner_error()->inner_error());
 
     testResult1 = testResult5;
 
-    REQUIRE(testResult1.Failed());
-    REQUIRE(!testResult1.Succeeded());
-    REQUIRE(testResult1.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult1.failed());
+    REQUIRE(!testResult1.succeeded());
+    REQUIRE(testResult1.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult1.message() == "message test 4 102");
-    REQUIRE(testResult1.errorCodeValue() == 1002);
-    REQUIRE(testResult1.innerError());
-    REQUIRE(testResult1.innerError()->Failed());
-    REQUIRE(testResult1.innerError()->errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(testResult1.innerError()->message() == "message");
-    REQUIRE(testResult1.innerError()->errorCodeValue() == 1000);
-    REQUIRE(!testResult1.innerError()->innerError());
+    REQUIRE(testResult1.error_code_value() == 1002);
+    REQUIRE(testResult1.inner_error());
+    REQUIRE(testResult1.inner_error()->failed());
+    REQUIRE(testResult1.inner_error()->error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(testResult1.inner_error()->message() == "message");
+    REQUIRE(testResult1.inner_error()->error_code_value() == 1000);
+    REQUIRE(!testResult1.inner_error()->inner_error());
 }
 
 TEST_CASE("Result with Return Unique Ptr Test", "[basic-checks]")
 {
     std::unique_ptr<std::string> return_value(new std::string("returned value"));
 
-    auto testResult1 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::Success(return_value);
+    auto testResult1 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::success(return_value);
 
-    REQUIRE(testResult1.Succeeded());
-    REQUIRE(!testResult1.Failed());
-    REQUIRE(testResult1.errorCode() == ErrorCodes2::SUCCESS);
+    REQUIRE(testResult1.succeeded());
+    REQUIRE(!testResult1.failed());
+    REQUIRE(testResult1.error_code() == ErrorCodes2::SUCCESS);
     REQUIRE(testResult1.message() == "Success");
-    REQUIRE(testResult1.errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(!testResult1.innerError());
-    REQUIRE(*testResult1.ReturnPtr() == "returned value");
+    REQUIRE(testResult1.error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(!testResult1.inner_error());
+    REQUIRE(*testResult1.return_ptr() == "returned value");
     return_value.reset(new std::string("new value"));
-    REQUIRE(*testResult1.ReturnPtr() == "returned value");
+    REQUIRE(*testResult1.return_ptr() == "returned value");
 
     auto testResult1Copy( testResult1 );
 
-    REQUIRE(testResult1Copy.Succeeded());
-    REQUIRE(!testResult1Copy.Failed());
-    REQUIRE(testResult1Copy.errorCode() == ErrorCodes2::SUCCESS);
+    REQUIRE(testResult1Copy.succeeded());
+    REQUIRE(!testResult1Copy.failed());
+    REQUIRE(testResult1Copy.error_code() == ErrorCodes2::SUCCESS);
     REQUIRE(testResult1Copy.message() == "Success");
-    REQUIRE(testResult1Copy.errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(!testResult1Copy.innerError());
-    REQUIRE(*testResult1Copy.ReturnPtr() == "returned value");
+    REQUIRE(testResult1Copy.error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(!testResult1Copy.inner_error());
+    REQUIRE(*testResult1Copy.return_ptr() == "returned value");
 
-    auto testResult2 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::Failure(ErrorCodes2::FAILURE_1, "message");
+    auto testResult2 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::failure(ErrorCodes2::FAILURE_1, "message");
 
-    REQUIRE(testResult2.Failed());
-    REQUIRE(!testResult2.Succeeded());
-    REQUIRE(testResult2.errorCode() == ErrorCodes2::FAILURE_1);
+    REQUIRE(testResult2.failed());
+    REQUIRE(!testResult2.succeeded());
+    REQUIRE(testResult2.error_code() == ErrorCodes2::FAILURE_1);
     REQUIRE(testResult2.message() == "message");
-    REQUIRE(testResult2.errorCodeValue() == 1000);
-    REQUIRE(!testResult2.innerError());
+    REQUIRE(testResult2.error_code_value() == 1000);
+    REQUIRE(!testResult2.inner_error());
 
-    auto testResult3 = ResultWithReturnUniquePtr<ErrorCodes1, std::string>::Failure(ErrorCodes1::FAILURE_2,
+    auto testResult3 = ResultWithReturnUniquePtr<ErrorCodes1, std::string>::failure(ErrorCodes1::FAILURE_2,
                                                                                     "message {} {}", "test 3", 35);
 
-    REQUIRE(testResult3.Failed());
-    REQUIRE(!testResult3.Succeeded());
-    REQUIRE(testResult3.errorCode() == ErrorCodes1::FAILURE_2);
+    REQUIRE(testResult3.failed());
+    REQUIRE(!testResult3.succeeded());
+    REQUIRE(testResult3.error_code() == ErrorCodes1::FAILURE_2);
     REQUIRE(testResult3.message() == "message test 3 35");
-    REQUIRE(testResult3.errorCodeValue() == 1001);
-    REQUIRE(!testResult3.innerError());
+    REQUIRE(testResult3.error_code_value() == 1001);
+    REQUIRE(!testResult3.inner_error());
 
-    auto testResult4 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::Failure(testResult3, ErrorCodes2::FAILURE_3,
+    auto testResult4 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::failure(testResult3, ErrorCodes2::FAILURE_3,
                                                                                     "message alone");
 
-    REQUIRE(testResult4.Failed());
-    REQUIRE(!testResult4.Succeeded());
-    REQUIRE(testResult4.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult4.failed());
+    REQUIRE(!testResult4.succeeded());
+    REQUIRE(testResult4.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult4.message() == "message alone");
-    REQUIRE(testResult4.errorCodeValue() == 1002);
-    REQUIRE(testResult4.innerError());
-    REQUIRE(testResult4.innerError()->Failed());
-    REQUIRE(testResult4.innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult4.innerError()->message() == "message test 3 35");
-    REQUIRE(testResult4.innerError()->errorCodeValue() == 1001);
-    REQUIRE(!testResult4.innerError()->innerError());
+    REQUIRE(testResult4.error_code_value() == 1002);
+    REQUIRE(testResult4.inner_error());
+    REQUIRE(testResult4.inner_error()->failed());
+    REQUIRE(testResult4.inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult4.inner_error()->message() == "message test 3 35");
+    REQUIRE(testResult4.inner_error()->error_code_value() == 1001);
+    REQUIRE(!testResult4.inner_error()->inner_error());
 
-    auto testResult5 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::Failure(testResult2, ErrorCodes2::FAILURE_3,
+    auto testResult5 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::failure(testResult2, ErrorCodes2::FAILURE_3,
                                                                                     "message {} {}", "test 4", 102);
 
-    REQUIRE(testResult5.Failed());
-    REQUIRE(!testResult5.Succeeded());
-    REQUIRE(testResult5.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult5.failed());
+    REQUIRE(!testResult5.succeeded());
+    REQUIRE(testResult5.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult5.message() == "message test 4 102");
-    REQUIRE(testResult5.errorCodeValue() == 1002);
-    REQUIRE(testResult5.innerError());
-    REQUIRE(testResult5.innerError()->Failed());
-    REQUIRE(testResult5.innerError()->errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(testResult5.innerError()->message() == "message");
-    REQUIRE(testResult5.innerError()->errorCodeValue() == 1000);
-    REQUIRE(!testResult5.innerError()->innerError());
+    REQUIRE(testResult5.error_code_value() == 1002);
+    REQUIRE(testResult5.inner_error());
+    REQUIRE(testResult5.inner_error()->failed());
+    REQUIRE(testResult5.inner_error()->error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(testResult5.inner_error()->message() == "message");
+    REQUIRE(testResult5.inner_error()->error_code_value() == 1000);
+    REQUIRE(!testResult5.inner_error()->inner_error());
 }
 
 TEST_CASE("Result with Return Shared Ptr Test", "[basic-checks]")
@@ -399,88 +399,88 @@ TEST_CASE("Result with Return Shared Ptr Test", "[basic-checks]")
 
     auto testResult1 = ResultWithReturnSharedPtr<ErrorCodes2, std::string>(return_value);
 
-    REQUIRE(testResult1.Succeeded());
-    REQUIRE(!testResult1.Failed());
-    REQUIRE(testResult1.errorCode() == ErrorCodes2::SUCCESS);
+    REQUIRE(testResult1.succeeded());
+    REQUIRE(!testResult1.failed());
+    REQUIRE(testResult1.error_code() == ErrorCodes2::SUCCESS);
     REQUIRE(testResult1.message() == "Success");
-    REQUIRE(testResult1.errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(!testResult1.innerError());
-    REQUIRE(*testResult1.ReturnPtr() == "returned value");
+    REQUIRE(testResult1.error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(!testResult1.inner_error());
+    REQUIRE(*testResult1.return_ptr() == "returned value");
     *return_value = "new value";
-    REQUIRE(*testResult1.ReturnPtr() == "new value");
+    REQUIRE(*testResult1.return_ptr() == "new value");
 
     auto testResult1Copy( testResult1 );
 
-    REQUIRE(testResult1Copy.Succeeded());
-    REQUIRE(!testResult1Copy.Failed());
-    REQUIRE(testResult1Copy.errorCode() == ErrorCodes2::SUCCESS);
+    REQUIRE(testResult1Copy.succeeded());
+    REQUIRE(!testResult1Copy.failed());
+    REQUIRE(testResult1Copy.error_code() == ErrorCodes2::SUCCESS);
     REQUIRE(testResult1Copy.message() == "Success");
-    REQUIRE(testResult1Copy.errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(!testResult1Copy.innerError());
-    REQUIRE(*testResult1Copy.ReturnPtr() == "new value");
+    REQUIRE(testResult1Copy.error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(!testResult1Copy.inner_error());
+    REQUIRE(*testResult1Copy.return_ptr() == "new value");
     *return_value = "new value 2";
-    REQUIRE(*testResult1Copy.ReturnPtr() == "new value 2");
+    REQUIRE(*testResult1Copy.return_ptr() == "new value 2");
 
-    auto testResult2 = ResultWithReturnSharedPtr<ErrorCodes2, std::string>::Failure(ErrorCodes2::FAILURE_1, "message");
+    auto testResult2 = ResultWithReturnSharedPtr<ErrorCodes2, std::string>::failure(ErrorCodes2::FAILURE_1, "message");
 
-    REQUIRE(testResult2.Failed());
-    REQUIRE(!testResult2.Succeeded());
-    REQUIRE(testResult2.errorCode() == ErrorCodes2::FAILURE_1);
+    REQUIRE(testResult2.failed());
+    REQUIRE(!testResult2.succeeded());
+    REQUIRE(testResult2.error_code() == ErrorCodes2::FAILURE_1);
     REQUIRE(testResult2.message() == "message");
-    REQUIRE(testResult2.errorCodeValue() == 1000);
-    REQUIRE(!testResult2.innerError());
+    REQUIRE(testResult2.error_code_value() == 1000);
+    REQUIRE(!testResult2.inner_error());
 
-    auto testResult3 = ResultWithReturnSharedPtr<ErrorCodes1, std::string>::Failure(ErrorCodes1::FAILURE_2,
+    auto testResult3 = ResultWithReturnSharedPtr<ErrorCodes1, std::string>::failure(ErrorCodes1::FAILURE_2,
                                                                                     "message {} {}", "test 3", 35);
 
-    REQUIRE(testResult3.Failed());
-    REQUIRE(!testResult3.Succeeded());
-    REQUIRE(testResult3.errorCode() == ErrorCodes1::FAILURE_2);
+    REQUIRE(testResult3.failed());
+    REQUIRE(!testResult3.succeeded());
+    REQUIRE(testResult3.error_code() == ErrorCodes1::FAILURE_2);
     REQUIRE(testResult3.message() == "message test 3 35");
-    REQUIRE(testResult3.errorCodeValue() == 1001);
-    REQUIRE(!testResult3.innerError());
+    REQUIRE(testResult3.error_code_value() == 1001);
+    REQUIRE(!testResult3.inner_error());
 
-    auto testResult4 = ResultWithReturnSharedPtr<ErrorCodes2, std::string>::Failure(testResult3, ErrorCodes2::FAILURE_3,
+    auto testResult4 = ResultWithReturnSharedPtr<ErrorCodes2, std::string>::failure(testResult3, ErrorCodes2::FAILURE_3,
                                                                                     "message alone");
 
-    REQUIRE(testResult4.Failed());
-    REQUIRE(!testResult4.Succeeded());
-    REQUIRE(testResult4.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult4.failed());
+    REQUIRE(!testResult4.succeeded());
+    REQUIRE(testResult4.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult4.message() == "message alone");
-    REQUIRE(testResult4.errorCodeValue() == 1002);
-    REQUIRE(testResult4.innerError());
-    REQUIRE(testResult4.innerError()->Failed());
-    REQUIRE(testResult4.innerError()->errorCodeType() == typeid(ErrorCodes1));
-    REQUIRE(testResult4.innerError()->message() == "message test 3 35");
-    REQUIRE(testResult4.innerError()->errorCodeValue() == 1001);
-    REQUIRE(!testResult4.innerError()->innerError());
+    REQUIRE(testResult4.error_code_value() == 1002);
+    REQUIRE(testResult4.inner_error());
+    REQUIRE(testResult4.inner_error()->failed());
+    REQUIRE(testResult4.inner_error()->error_code_type() == typeid(ErrorCodes1));
+    REQUIRE(testResult4.inner_error()->message() == "message test 3 35");
+    REQUIRE(testResult4.inner_error()->error_code_value() == 1001);
+    REQUIRE(!testResult4.inner_error()->inner_error());
 
-    auto testResult5 = ResultWithReturnSharedPtr<ErrorCodes2, std::string>::Failure(testResult2, ErrorCodes2::FAILURE_3,
+    auto testResult5 = ResultWithReturnSharedPtr<ErrorCodes2, std::string>::failure(testResult2, ErrorCodes2::FAILURE_3,
                                                                                     "message {} {}", "test 4", 102);
 
-    REQUIRE(testResult5.Failed());
-    REQUIRE(!testResult5.Succeeded());
-    REQUIRE(testResult5.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult5.failed());
+    REQUIRE(!testResult5.succeeded());
+    REQUIRE(testResult5.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult5.message() == "message test 4 102");
-    REQUIRE(testResult5.errorCodeValue() == 1002);
-    REQUIRE(testResult5.innerError());
-    REQUIRE(testResult5.innerError()->Failed());
-    REQUIRE(testResult5.innerError()->errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(testResult5.innerError()->message() == "message");
-    REQUIRE(testResult5.innerError()->errorCodeValue() == 1000);
-    REQUIRE(!testResult5.innerError()->innerError());
+    REQUIRE(testResult5.error_code_value() == 1002);
+    REQUIRE(testResult5.inner_error());
+    REQUIRE(testResult5.inner_error()->failed());
+    REQUIRE(testResult5.inner_error()->error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(testResult5.inner_error()->message() == "message");
+    REQUIRE(testResult5.inner_error()->error_code_value() == 1000);
+    REQUIRE(!testResult5.inner_error()->inner_error());
 
     testResult1 = testResult5;
 
-    REQUIRE(testResult1.Failed());
-    REQUIRE(!testResult1.Succeeded());
-    REQUIRE(testResult1.errorCode() == ErrorCodes2::FAILURE_3);
+    REQUIRE(testResult1.failed());
+    REQUIRE(!testResult1.succeeded());
+    REQUIRE(testResult1.error_code() == ErrorCodes2::FAILURE_3);
     REQUIRE(testResult1.message() == "message test 4 102");
-    REQUIRE(testResult1.errorCodeValue() == 1002);
-    REQUIRE(testResult1.innerError());
-    REQUIRE(testResult1.innerError()->Failed());
-    REQUIRE(testResult1.innerError()->errorCodeType() == typeid(ErrorCodes2));
-    REQUIRE(testResult1.innerError()->message() == "message");
-    REQUIRE(testResult1.innerError()->errorCodeValue() == 1000);
-    REQUIRE(!testResult1.innerError()->innerError());
+    REQUIRE(testResult1.error_code_value() == 1002);
+    REQUIRE(testResult1.inner_error());
+    REQUIRE(testResult1.inner_error()->failed());
+    REQUIRE(testResult1.inner_error()->error_code_type() == typeid(ErrorCodes2));
+    REQUIRE(testResult1.inner_error()->message() == "message");
+    REQUIRE(testResult1.inner_error()->error_code_value() == 1000);
+    REQUIRE(!testResult1.inner_error()->inner_error());
 }
