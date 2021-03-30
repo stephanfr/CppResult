@@ -317,7 +317,7 @@ namespace SEFUtility
             return (ResultWithReturnRef(BaseResultCodes::FAILURE, inner_error, error_code, fmt::format(format, args...)));
         }
 
-        TResultType& ReturnRef()
+        TResultType& return_ref()
         {
             assert(return_ref_);
             return (*return_ref_);

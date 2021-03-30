@@ -239,9 +239,9 @@ TEST_CASE("Result with Return Ref Test", "[basic-checks]")
     REQUIRE(testResult1.message() == "Success");
     REQUIRE(testResult1.error_code_type() == typeid(ErrorCodes2));
     REQUIRE(!testResult1.inner_error());
-    REQUIRE(testResult1.ReturnRef() == "returned value");
+    REQUIRE(testResult1.return_ref() == "returned value");
     return_value = "new value";
-    REQUIRE(testResult1.ReturnRef() == "new value");
+    REQUIRE(testResult1.return_ref() == "new value");
 
     auto testResult1Copy(testResult1);
 
@@ -251,7 +251,7 @@ TEST_CASE("Result with Return Ref Test", "[basic-checks]")
     REQUIRE(testResult1Copy.message() == "Success");
     REQUIRE(testResult1Copy.error_code_type() == typeid(ErrorCodes2));
     REQUIRE(!testResult1Copy.inner_error());
-    REQUIRE(testResult1Copy.ReturnRef() == "new value");
+    REQUIRE(testResult1Copy.return_ref() == "new value");
 
     auto testResult2 = ResultWithReturnRef<ErrorCodes2, std::string>::failure(ErrorCodes2::FAILURE_1, "message");
 
