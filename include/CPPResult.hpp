@@ -344,7 +344,7 @@ namespace SEFUtility
         }
 
        public:
-        explicit ResultWithReturnUniquePtr(std::unique_ptr<TResultType>& return_ptr)
+        explicit ResultWithReturnUniquePtr(std::unique_ptr<TResultType>&& return_ptr)
             : Result<TErrorCodeEnum>(BaseResultCodes::SUCCESS, TErrorCodeEnum::SUCCESS, "Success"),
               return_ptr_(std::move(return_ptr))
         {
@@ -367,10 +367,9 @@ namespace SEFUtility
         const ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType>& operator=(
                 const ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType>& result_to_copy) = delete;
 
-
-        static ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType> success(std::unique_ptr<TResultType>& return_value)
+        static ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType> success(std::unique_ptr<TResultType>&& return_value)
         {
-            return (ResultWithReturnUniquePtr(return_value));
+            return (ResultWithReturnUniquePtr(std::move(return_value)));
         }
 
         static ResultWithReturnUniquePtr<TErrorCodeEnum, TResultType> failure(TErrorCodeEnum error_code,

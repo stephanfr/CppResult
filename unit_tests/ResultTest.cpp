@@ -321,7 +321,7 @@ TEST_CASE("Result with Return Unique Ptr Test", "[basic-checks]")
 {
     std::unique_ptr<std::string> return_value(new std::string("returned value"));
 
-    auto testResult1 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::success(return_value);
+    auto testResult1 = ResultWithReturnUniquePtr<ErrorCodes2, std::string>::success( std::move( return_value));
 
     REQUIRE(testResult1.succeeded());
     REQUIRE(!testResult1.failed());
