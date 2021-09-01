@@ -1,6 +1,6 @@
 #include <catch2/catch_all.hpp>
 
-#include "Result.hpp"
+#include "CPPResult.hpp"
 
 //  The pragma below is to disable to false errors flagged by intellisense for
 //  Catch2 REQUIRE macros.
